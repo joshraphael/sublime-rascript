@@ -1,0 +1,70 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: RAScript
+scope: source.rascript
+contexts:
+  main:
+    - include: statements
+  booleans:
+    - match: \b(true|false)\b
+      scope: constant.language.boolean.rascript
+  comments:
+    - match: /\*
+      push:
+        - meta_scope: comment.block.rascript
+        - match: \*/
+          pop: true
+    - match: //
+      push:
+        - meta_scope: comment.line.double-slash.rascript
+        - match: $
+          pop: true
+  controls:
+    - match: \b(if|else|for|in|return)\b
+      scope: keyword.control.rascript
+  function-definitions:
+    - match: '(\bfunction\b)\s*(\w+)\s*\(([^\(\)]*)\)'
+      captures:
+        "1": keyword.function.rascript
+  function-names:
+    - match: (\w+)\s*\(
+      captures:
+  header:
+    - match: ^//\s*(#ID)\s*=\s*(\d+)$
+      scope: comment.line.double-slash.rascript
+      captures:
+        "1": keyword.other.id.rascript
+        "2": constant.numeric.id.rascript
+    - match: ^//\s*(#MinimumVersion)\s*=\s*(\d+(\.\d)?)$
+      scope: comment.line.double-slash.rascript
+      captures:
+        "1": keyword.other.version.rascript
+        "2": constant.numeric.version.rascript
+  numbers:
+    - match: '\b[0-9]+\b'
+      scope: constant.numeric.decimal.rascript
+    - match: (?i)\$\b\h+\b|\b0x\h+\b
+      scope: constant.numeric.hexadecimal.rascript
+  statements:
+    - include: controls
+    - include: booleans
+    - include: strings
+    - include: numbers
+    - include: function-definitions
+    - include: function-names
+    - include: header
+    - include: comments
+    - include: variable-assignment
+    - include: variable-other
+  strings:
+    - match: (?:".*?")
+      scope: string.quoted.double.rascript
+  variable-assignment:
+    - match: (\w+)\s*=
+      comment: left hand side of variable assignment
+      captures:
+  variable-other:
+    - match: (\w+)
+      comment: different variables around the file being used, not assignment
+      captures:
