@@ -24,21 +24,23 @@ contexts:
     - match: \b(if|else|for|in|return)\b
       scope: keyword.control.rascript
   function-definitions:
-    - match: '(\bfunction\b)\s*(([0-9][a-zA-Z0-9]*)|(\w+))\s*\('
+    - match: '(\bfunction\b)\s*(([a-zA-Z][\w]*)|(.+))\s*\('
       captures:
         "1": keyword.function.rascript
         # Skip capture group 2 [function name]
-        "3": invalid.illegal.identifier.rascript
-        "4": entity.name.function.rascript
+        "3": entity.name.function.rascript # valid
+        "4": invalid.illegal.identifier.rascript # Not valid
       set:
         - match: '\)'
           pop: true
-        - match: ([^ \,]*[\%\!\@\#\$\%\^\&\*\-\=\+\[\]\{\}\;\:\'\"\.\<\>\/\\\?]+[^ \,]*) # contains illegal symbol
+        - match: ([\w]+\s+[\w]+) # contains space in the wrong place
           scope: invalid.illegal.identifier.rascript
-        - match: '\b([0-9][a-zA-Z0-9]*)\b' # starts with number
+        - match: ([^\s\,]*[\%\!\@\#\$\%\^\&\*\-\=\+\[\]\{\}\;\:\'\"\.\<\>\/\\\?]+[^\s\,]*) # contains illegal symbol
           scope: invalid.illegal.identifier.rascript
-        - match: '\b([a-zA-Z][a-zA-Z0-9]*)\b' # valid word variable name
+        - match: '\b([a-zA-Z][\w]*)\b' # valid word variable name (starting with letter)
           scope: variable.parameter.rascript
+        - match: '\b(\w+)\b' # catch all
+          scope: invalid.illegal.identifier.rascript
         - include: main
   function-names:
     - match: (\w+)\s*\(
