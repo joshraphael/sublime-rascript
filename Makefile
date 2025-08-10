@@ -4,3 +4,6 @@ package:
 
 install: package
 	cp RAScript.sublime-package ~/.config/sublime-text/Installed\ Packages
+
+release: package
+	go run release.go
