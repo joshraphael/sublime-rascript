@@ -9,4 +9,4 @@ jobs:
       - name: Setup env
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: make release
+        run: make release
