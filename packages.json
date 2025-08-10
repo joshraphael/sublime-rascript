@@ -1,0 +1,24 @@
+{
+	"schema_version": "3.0.0",
+	"packages": [
+		{
+			"name": "RAScript",
+            "description": "A syntax file for RAScript to build RetroAchievement logic",
+			"details": "https://github.com/joshraphael/sublime-rascript",
+            "author": "Joshua Raphael",
+            "homepage": "https://github.com/joshraphael/sublime-rascript",
+            "readme": "https://raw.githubusercontent.com/joshraphael/sublime-rascript/main/README.md",
+			"labels": [
+				"language syntax"
+			],
+			"releases": [
+				{
+                    "sublime_text": "*",
+                    "version": "0.0.2",
+                    "url": "https://github.com/joshraphael/sublime-rascript/releases/download/v0.0.2/RAScript.sublime-package",
+                    "date": "2025-08-10 22:34:49"
+                }
+			]
+		}
+	]
+}
