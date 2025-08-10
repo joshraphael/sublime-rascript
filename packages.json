@@ -13,10 +13,10 @@
 			],
 			"releases": [
 				{
-                    "sublime_text": "*",
-                    "version": "0.0.2",
-                    "url": "https://github.com/joshraphael/sublime-rascript/releases/download/v0.0.2/RAScript.sublime-package",
-                    "date": "2025-08-10 22:34:49"
+					"sublime_text": "*",
+					"version": "0.0.1",
+					"url": "https://github.com/joshraphael/sublime-rascript/releases/download/v0.0.1/RAScript.sublime-package",
+					"date": "2025-08-10 22:34:49"
                 }
 			]
 		}
