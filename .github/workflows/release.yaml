@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: make package
-      - run: mv RAScript.sublime-package RAScript-${{ github.ref_name }}.sublime-package
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
