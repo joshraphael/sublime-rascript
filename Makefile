@@ -6,3 +6,8 @@ package: syntax
 
 install: package
 	cp RAScript.sublime-package ~/.config/sublime-text/Installed\ Packages
+
+test:
+	mv rascript.tmLanguage rascript.original.tmLanguage
+	make syntax
+	diff -q "rascript.tmLanguage" "rascript.original.tmLanguage"
