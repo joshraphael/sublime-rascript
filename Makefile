@@ -1,5 +1,7 @@
-package:
+syntax:
 	wget -O rascript.tmLanguage 'https://github.com/joshraphael/rascript-syntax/releases/download/v0.0.3/rascript.tmLanguage'
+
+package: syntax
 	zip -r RAScript.sublime-package rascript.tmLanguage
 
 install: package
