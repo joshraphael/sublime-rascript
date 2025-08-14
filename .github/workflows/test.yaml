@@ -3,7 +3,7 @@ on:
 
 name: Test Files
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
