@@ -11,7 +11,7 @@ This language uses [rascript-language-server](https://github.com/joshraphael/ras
 
 install the [LSP](https://github.com/sublimelsp/LSP/) plugin for Sublime and edit the LSP settings to add a new client by going to `Preferences > Package Settings > LSP > Settings` and adding the client for rascript
 
-```text
+```json
 {
   "log_debug": true,
   "clients": {
