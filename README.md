@@ -1,5 +1,7 @@
 # sublime-rascript
 
+Sublime Text plugin to define RAScript grammar. Available on [Package Control](https://packagecontrol.io/packages/RAScript)
+
 ## Setup
 
 This plugin uses the [rascript-syntax](https://github.com/joshraphael/rascript-syntax) repo to define the RAScript grammar. Generate the sublime package using the Makefile by running `make package`, and place the `RAScript.sublime-package` into your sublime text `Installed Packages` folder (ex: `~/.config/sublime-text/Installed Packages`) and syntax highlighting should start appearing on your rascript files. There is an automated make command to do this for you by running `make install`
@@ -9,7 +11,7 @@ This language uses [rascript-language-server](https://github.com/joshraphael/ras
 
 install the [LSP](https://github.com/sublimelsp/LSP/) plugin for Sublime and edit the LSP settings to add a new client by going to `Preferences > Package Settings > LSP > Settings` and adding the client for rascript
 
-```txt
+```text
 {
   "log_debug": true,
   "clients": {
@@ -27,9 +29,9 @@ Save and restart your editor and your RAScripts should start getting code tools.
 
 ## Make Commands
 
-|Title|Command|Parameters|Description|
-|-|-|-|-|
-|Syntax|`make syntax`|None|Download the syntax file|
-|Package Exetension|`make package`|None|Package the extension|
-|Test|`make test`|None|Test the extension|
-|Install|`make install`|None|Install the extension locally|
+| Title              | Command        | Parameters | Description                   |
+|--------------------|----------------|------------|-------------------------------|
+| Syntax             | `make syntax`  | None       | Download the syntax file      |
+| Package Exetension | `make package` | None       | Package the extension         |
+| Test               | `make test`    | None       | Test the extension            |
+| Install            | `make install` | None       | Install the extension locally |
