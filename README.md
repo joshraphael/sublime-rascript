@@ -9,7 +9,7 @@ This plugin uses the [rascript-syntax](https://github.com/joshraphael/rascript-s
 ### LSP
 This language uses [rascript-language-server](https://github.com/joshraphael/rascript-language-server) to handle language hints and code tools, download the latest release and place the file somewhere you can remember on your computer (ex: `~/Desktop/rascript-language-server_v0.0.1_linux-x64`)
 
-install the [LSP](https://github.com/sublimelsp/LSP/) plugin for Sublime and edit the LSP settings to add a new client by going to `Preferences > Package Settings > LSP > Settings` and adding the client for rascript
+install the [LSP](https://packagecontrol.io/packages/LSP) plugin for Sublime and edit the LSP settings to add a new client by going to `Preferences > Package Settings > LSP > Settings` and adding the client for rascript
 
 ```json
 {
