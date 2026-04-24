@@ -4,8 +4,8 @@
 <dict>
 	<key>$schema</key>
 	<string>https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json</string>
-	<key>$version</key>
-	<string>v0.0.3</string>
+	<key>version</key>
+	<string>v0.4.0</string>
 	<key>name</key>
 	<string>RAScript</string>
 	<key>patterns</key>
@@ -100,10 +100,43 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>begin</key>
+					<string>"</string>
+					<key>end</key>
+					<string>"</string>
 					<key>name</key>
 					<string>string.quoted.double.rascript</string>
-					<key>match</key>
-					<string>(?:".*?")</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>\\.</string>
+							<key>name</key>
+							<string>constant.character.escape.rascript</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>({)([0-9]+)(})</string>
+							<key>captures</key>
+							<dict>
+								<key>1</key>
+								<dict>
+									<key>name</key>
+									<string>punctuation.definition.template-expression.begin.rascript</string>
+								</dict>
+								<key>2</key>
+								<dict>
+									<key>name</key>
+									<string>variable.other.rascript</string>
+								</dict>
+								<key>3</key>
+								<dict>
+									<key>name</key>
+									<string>punctuation.definition.template-expression.end.rascript</string>
+								</dict>
+							</dict>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
