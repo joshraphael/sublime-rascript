@@ -5,7 +5,7 @@
 	<key>$schema</key>
 	<string>https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json</string>
 	<key>version</key>
-	<string>v0.4.0</string>
+	<string>v0.4.5</string>
 	<key>name</key>
 	<string>RAScript</string>
 	<key>patterns</key>
@@ -27,6 +27,10 @@
 				</dict>
 				<dict>
 					<key>include</key>
+					<string>#function-definitions</string>
+				</dict>
+				<dict>
+					<key>include</key>
 					<string>#booleans</string>
 				</dict>
 				<dict>
@@ -39,15 +43,11 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#class-definitions</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#function-definitions</string>
-				</dict>
-				<dict>
-					<key>include</key>
 					<string>#function-names</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#class-definitions</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -158,88 +158,84 @@
 				</dict>
 			</array>
 		</dict>
-		<key>class-definitions</key>
+		<key>function-definitions</key>
 		<dict>
+			<key>comment</key>
+			<string>force function keyword and function name with open parentheses on same line since this is a more complex capture. Go until functionsignature terminates (either { or =&gt;)</string>
+			<key>begin</key>
+			<string>(\bfunction\b)\s*(\w+)\s*\(</string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.function.rascript</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.rascript</string>
+				</dict>
+			</dict>
+			<key>end</key>
+			<string>\{|\=\&gt;</string>
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>include</key>
+					<string>#inner-functions</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#booleans</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#strings</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#numbers</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#function-names</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>if we detect an assignment, mark the left hand side a parameter</string>
 					<key>match</key>
-					<string>(\bclass\b)[\t ]*(([a-zA-Z_][\w]*)|(.+))</string>
+					<string>(?&lt;!\=)\s*(\w+)\s*(?=\=)</string>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.class.rascript</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.class.rascript</string>
-						</dict>
-						<key>4</key>
-						<dict>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
+							<string>variable.parameter.rascript</string>
 						</dict>
 					</dict>
 				</dict>
-			</array>
-		</dict>
-		<key>function-definitions</key>
-		<dict>
-			<key>patterns</key>
-			<array>
 				<dict>
-					<key>begin</key>
-					<string>(\bfunction\b)[\t ]*(([a-zA-Z_][\w]*)|(.+))\(</string>
-					<key>beginCaptures</key>
+					<key>comment</key>
+					<string>if the right hand side of the equals is NOT a function call, mark the word a variable</string>
+					<key>match</key>
+					<string>(?&lt;=\=)\s*(\w+)\s*(?!\()</string>
+					<key>captures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.function.rascript</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.function.rascript</string>
-						</dict>
-						<key>4</key>
-						<dict>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
+							<string>variable.other.rascript</string>
 						</dict>
 					</dict>
-					<key>end</key>
-					<string>\)</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>match</key>
-							<string>(?:[\w]+\s+[\w]+)</string>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>(?:[^\s\,!]*[\%\!\@\#\$\%\^\&amp;\*\-\=\+\[\]\{\}\;\:\'"\.\&lt;\&gt;\/\?]+[^\s\,]*)</string>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>(?:[a-zA-Z_][\w]*)</string>
-							<key>name</key>
-							<string>variable.parameter.rascript</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>(?:\w+)</string>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
-						</dict>
-					</array>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>mark everything else as a parameter</string>
+					<key>match</key>
+					<string>\w+</string>
+					<key>name</key>
+					<string>variable.parameter.rascript</string>
 				</dict>
 			</array>
 		</dict>
@@ -249,18 +245,52 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>(([0-9][\w+]*)|(\w+))\(</string>
+					<string>(\w+)\s*(?=\()</string>
 					<key>captures</key>
 					<dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>invalid.illegal.identifier.rascript</string>
-						</dict>
-						<key>3</key>
+						<key>1</key>
 						<dict>
 							<key>name</key>
 							<string>entity.name.function.rascript</string>
+						</dict>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+		<key>inner-functions</key>
+		<dict>
+			<key>comment</key>
+			<string>this prevents the function argument parser section to ignore inner function variables being marked as parameters by just passing them over</string>
+			<key>begin</key>
+			<string>\(</string>
+			<key>end</key>
+			<string>\)</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+			</array>
+		</dict>
+		<key>class-definitions</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>(\bclass\b)[\t ]*([a-zA-Z_][\w]*)</string>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.class.rascript</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.class.rascript</string>
 						</dict>
 					</dict>
 				</dict>
@@ -274,7 +304,7 @@
 					<key>name</key>
 					<string>comment.line.double-slash.rascript</string>
 					<key>match</key>
-					<string>^//\s*(#ID)\s*=\s*(\d+)$</string>
+					<string>^//[\t ]*(#ID)[\t ]*=[\t ]*(\d+)$</string>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -293,7 +323,7 @@
 					<key>name</key>
 					<string>comment.line.double-slash.rascript</string>
 					<key>match</key>
-					<string>^//\s*(#MinimumVersion)\s*=\s*(\d+(\.\d)?)$</string>
+					<string>^//[\t ]*(#MinimumVersion)[\t ]*=[\t ]*(\d+(\.\d)?)$</string>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
