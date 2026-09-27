@@ -1,5 +1,5 @@
 syntax:
-	wget -O rascript.tmLanguage 'https://github.com/joshraphael/rascript-syntax/releases/download/v0.4.0/rascript.tmLanguage'
+	wget -O rascript.tmLanguage 'https://github.com/joshraphael/rascript-syntax/releases/download/v0.4.5/rascript.tmLanguage'
 
 package: syntax
 	zip -r RAScript.sublime-package rascript.tmLanguage
