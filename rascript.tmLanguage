@@ -5,7 +5,7 @@
 	<key>$schema</key>
 	<string>https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json</string>
 	<key>version</key>
-	<string>v0.4.5</string>
+	<string>v0.5.1</string>
 	<key>name</key>
 	<string>RAScript</string>
 	<key>patterns</key>
@@ -21,6 +21,16 @@
 		<dict>
 			<key>patterns</key>
 			<array>
+				<dict>
+					<key>comment</key>
+					<string>header before comments, since both start with //. These come first because tmlanguage2vim.py gives a rule its Vim priority from where it is first included, and function-definitions also includes #comments</string>
+					<key>include</key>
+					<string>#header</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#comments</string>
+				</dict>
 				<dict>
 					<key>include</key>
 					<string>#controls</string>
@@ -51,11 +61,19 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#header</string>
+					<string>#lambdas</string>
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#comments</string>
+					<string>#parentheses</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#blocks</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#brackets</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -76,24 +94,66 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>comment</key>
+					<string>if with its condition in parentheses: the condition is its own region so if (x) { isn't read as the lambda (x) { ... }</string>
+					<key>begin</key>
+					<string>\b(if)[\t ]*\(</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.rascript</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>\)</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>for loop header: in is only a keyword after for and the loop variable, elsewhere it is a normal name (in = 1, function in(...))</string>
+					<key>match</key>
+					<string>\b(for)[\t ]+(\b(?!\d)\w+)[\t ]+(in)\b</string>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.rascript</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>variable.other.rascript</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.rascript</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
 					<key>name</key>
 					<string>keyword.control.rascript</string>
 					<key>match</key>
-					<string>\b(if|else|for|in|return)\b</string>
+					<string>\b(if|else|for|return)\b</string>
 				</dict>
 			</array>
 		</dict>
 		<key>booleans</key>
 		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>name</key>
-					<string>constant.language.boolean.rascript</string>
-					<key>match</key>
-					<string>\b(true|false)\b</string>
-				</dict>
-			</array>
+			<key>name</key>
+			<string>constant.language.boolean.rascript</string>
+			<key>match</key>
+			<string>\b(?:true|false)\b</string>
 		</dict>
 		<key>strings</key>
 		<dict>
@@ -109,6 +169,16 @@
 					<key>patterns</key>
 					<array>
 						<dict>
+							<key>comment</key>
+							<string>unicode escape: \u and exactly four hex digits, one character (\u00e9 is é)</string>
+							<key>match</key>
+							<string>\\u\h{4}</string>
+							<key>name</key>
+							<string>constant.character.escape.rascript</string>
+						</dict>
+						<dict>
+							<key>comment</key>
+							<string>any other escape: RATools reads \t \n \r, and drops the backslash before any other character</string>
 							<key>match</key>
 							<string>\\.</string>
 							<key>name</key>
@@ -116,7 +186,7 @@
 						</dict>
 						<dict>
 							<key>match</key>
-							<string>({)([0-9]+)(})</string>
+							<string>(\{)([0-9]+)(\})</string>
 							<key>captures</key>
 							<dict>
 								<key>1</key>
@@ -145,23 +215,25 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>comment</key>
+					<string>whole numbers and decimals like 19.25, scoped as one number including the dot</string>
 					<key>name</key>
 					<string>constant.numeric.decimal.rascript</string>
 					<key>match</key>
-					<string>\b[0-9]+\b</string>
+					<string>\b[0-9]+(\.[0-9]+)?\b</string>
 				</dict>
 				<dict>
 					<key>name</key>
 					<string>constant.numeric.hexadecimal.rascript</string>
 					<key>match</key>
-					<string>(?i)\$\b\h+\b|\b0x\h+\b</string>
+					<string>\b0x\h+\b</string>
 				</dict>
 			</array>
 		</dict>
 		<key>function-definitions</key>
 		<dict>
 			<key>comment</key>
-			<string>force function keyword and function name with open parentheses on same line since this is a more complex capture. Go until functionsignature terminates (either { or =&gt;)</string>
+			<string>a function definition from the function keyword to the ) closing its parameter list, so parameters can span lines. The keyword, name and ( must be on the same line</string>
 			<key>begin</key>
 			<string>(\bfunction\b)\s*(\w+)\s*\(</string>
 			<key>beginCaptures</key>
@@ -178,62 +250,33 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>\{|\=\&gt;</string>
+			<string>\)</string>
 			<key>patterns</key>
 			<array>
 				<dict>
 					<key>include</key>
-					<string>#inner-functions</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#booleans</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#strings</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#numbers</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#function-names</string>
+					<string>#comments</string>
 				</dict>
 				<dict>
 					<key>comment</key>
-					<string>if we detect an assignment, mark the left hand side a parameter</string>
-					<key>match</key>
-					<string>(?&lt;!\=)\s*(\w+)\s*(?=\=)</string>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
+					<string>default value: everything after = up to the next , or ) is highlighted as usual. Parentheses, blocks and brackets in the value consume their own , and )</string>
+					<key>begin</key>
+					<string>=(?!=)</string>
+					<key>end</key>
+					<string>(?=[,)])</string>
+					<key>patterns</key>
+					<array>
 						<dict>
-							<key>name</key>
-							<string>variable.parameter.rascript</string>
+							<key>include</key>
+							<string>$self</string>
 						</dict>
-					</dict>
+					</array>
 				</dict>
 				<dict>
 					<key>comment</key>
-					<string>if the right hand side of the equals is NOT a function call, mark the word a variable</string>
+					<string>parameter name</string>
 					<key>match</key>
-					<string>(?&lt;=\=)\s*(\w+)\s*(?!\()</string>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>variable.other.rascript</string>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>comment</key>
-					<string>mark everything else as a parameter</string>
-					<key>match</key>
-					<string>\w+</string>
+					<string>\b(?!\d)\w+</string>
 					<key>name</key>
 					<string>variable.parameter.rascript</string>
 				</dict>
@@ -244,23 +287,144 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>match</key>
-					<string>(\w+)\s*(?=\()</string>
-					<key>captures</key>
+					<key>comment</key>
+					<string>a function call from its name to the closing ), so arguments can span lines. Named arguments (title = ...) are scoped as parameters of the call. This rule is for built-ins; a built-in name after a . is a method call (this.prev()), left to the next rule</string>
+					<key>begin</key>
+					<string>(?&lt;!\.)\b(byte|word|tbyte|dword|bit0|bit1|bit2|bit3|bit4|bit5|bit6|bit7|bit|low4|high4|bitcount|word_be|tbyte_be|dword_be|float|float_be|mbf32|mbf32_le|double32|double32_be|prev|prior|bcd|identity_transform|ascii_string_equals|unicode_string_equals|remembered|repeated|once|tally|deduct|never|unless|measured|trigger_when|disable_when|always_true|always_false|format|substring|length|range|array_push|array_pop|array_map|array_contains|array_reduce|array_filter|field_map|dictionary_contains_key|any_of|all_of|none_of|sum_of|tally_of|max_of|assert|achievement|achievement_set|rich_presence_display|rich_presence_value|rich_presence_lookup|rich_presence_ascii_string_lookup|rich_presence_macro|rich_presence_conditional_display|leaderboard|__ornext)\b\s*\(</string>
+					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>entity.name.function.rascript</string>
+							<string>support.function.rascript</string>
 						</dict>
 					</dict>
+					<key>end</key>
+					<string>\)</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#call-arguments</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>a call to any other function, including methods named like built-ins (this.prev()). A separate rule from the built-ins, so neither needs to exclude the other</string>
+					<key>begin</key>
+					<string>\b(\w+)\s*\(</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.call.rascript</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>\)</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#call-arguments</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>any other name at the end of a line, built-ins included, which is a call if its ( is on a later line. The grammar can't see the next line when the name is scoped, so the name stays a variable, but the arguments are scoped as a call's. Reserved words are left to their own rules (return (x), this)</string>
+					<key>begin</key>
+					<string>\b(?!(?:if|else|for|in|return|function|class|this|true|false)\b)((?!\d)\w+)\b(?=[\t ]*(?://.*)?$)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>variable.other.rascript</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?=[^\s(/])</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#comments</string>
+						</dict>
+						<dict>
+							<key>begin</key>
+							<string>\(</string>
+							<key>end</key>
+							<string>\)</string>
+							<key>patterns</key>
+							<array>
+								<dict>
+									<key>include</key>
+									<string>#call-arguments</string>
+								</dict>
+							</array>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
-		<key>inner-functions</key>
+		<key>call-arguments</key>
 		<dict>
 			<key>comment</key>
-			<string>this prevents the function argument parser section to ignore inner function variables being marked as parameters by just passing them over</string>
+			<string>the inside of a function call's parentheses</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>comment</key>
+					<string>named argument: the name in name = value, but not in name == value or the lambda name =&gt; value</string>
+					<key>name</key>
+					<string>variable.parameter.function-call.rascript</string>
+					<key>match</key>
+					<string>\b(?!\d)\w+(?=[\t ]*=(?![=&gt;]))</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+			</array>
+		</dict>
+		<key>lambdas</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>comment</key>
+					<string>lambda with parameters in parentheses: (a, b) =&gt; ... or (a, b) { ... }. The ( and the names up to ) =&gt; or ) { must be on one line</string>
+					<key>begin</key>
+					<string>\((?=(?:\w|[\t ,])*\)[\t ]*(?:=&gt;|\{))</string>
+					<key>end</key>
+					<string>\)</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>\b(?!\d)\w+</string>
+							<key>name</key>
+							<string>variable.parameter.rascript</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>lambda with one parameter and no parentheses: v =&gt; ...</string>
+					<key>name</key>
+					<string>variable.parameter.rascript</string>
+					<key>match</key>
+					<string>\b(?!\d)\w+(?=[\t ]*=&gt;)</string>
+				</dict>
+			</array>
+		</dict>
+		<key>parentheses</key>
+		<dict>
+			<key>comment</key>
+			<string>matched ( ) pairs, so a region containing them can't end on their ) or on a , inside them. The contents are highlighted as usual</string>
 			<key>begin</key>
 			<string>\(</string>
 			<key>end</key>
@@ -273,28 +437,55 @@
 				</dict>
 			</array>
 		</dict>
-		<key>class-definitions</key>
+		<key>blocks</key>
 		<dict>
+			<key>comment</key>
+			<string>matched { } pairs, so a region containing them can't end on a ) or , inside them. The contents are highlighted as usual</string>
+			<key>begin</key>
+			<string>\{</string>
+			<key>end</key>
+			<string>\}</string>
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>match</key>
-					<string>(\bclass\b)[\t ]*([a-zA-Z_][\w]*)</string>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.class.rascript</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.class.rascript</string>
-						</dict>
-					</dict>
+					<key>include</key>
+					<string>$self</string>
 				</dict>
 			</array>
+		</dict>
+		<key>brackets</key>
+		<dict>
+			<key>comment</key>
+			<string>matched [ ] pairs, so a region containing them can't end on a ) or , inside them. The contents are highlighted as usual</string>
+			<key>begin</key>
+			<string>\[</string>
+			<key>end</key>
+			<string>\]</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+			</array>
+		</dict>
+		<key>class-definitions</key>
+		<dict>
+			<key>match</key>
+			<string>(\bclass\b)[\t ]*(\b(?!\d)\w+)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.class.rascript</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.class.rascript</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>header</key>
 		<dict>
@@ -320,10 +511,12 @@
 					</dict>
 				</dict>
 				<dict>
+					<key>comment</key>
+					<string>only the RATools release versions listed in https://github.com/Jamiras/RATools/blob/master/Source/Data/Version.cs (0.73-0.79, 1.0-1.4, 1.3.1, 1.4.1, 1.4.2), optionally padded with .0 up to the 4 parts RATools parses (1.0.0.0 is 1.0).</string>
 					<key>name</key>
 					<string>comment.line.double-slash.rascript</string>
 					<key>match</key>
-					<string>^//[\t ]*(#MinimumVersion)[\t ]*=[\t ]*(\d+(\.\d)?)$</string>
+					<string>^//[\t ]*(#MinimumVersion)[\t ]*=[\t ]*((?:0\.7[3-9]|1\.[0-4])(?:\.0){0,2}|(?:1\.3\.1|1\.4\.[12])(?:\.0)?)$</string>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -380,55 +573,28 @@
 		</dict>
 		<key>variable-language-this</key>
 		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>name</key>
-					<string>variable.language.this.rascript</string>
-					<key>match</key>
-					<string>\b(this)\b</string>
-				</dict>
-			</array>
+			<key>name</key>
+			<string>variable.language.this.rascript</string>
+			<key>match</key>
+			<string>\bthis\b</string>
 		</dict>
 		<key>variable-assignment</key>
 		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>comment</key>
-					<string>left hand side of variable assignment</string>
-					<key>match</key>
-					<string>([a-zA-Z_][\w]*)[\t ]*=</string>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>variable.other.assignment.rascript</string>
-						</dict>
-					</dict>
-				</dict>
-			</array>
+			<key>comment</key>
+			<string>left hand side of variable assignment, but not of an == comparison</string>
+			<key>name</key>
+			<string>variable.other.assignment.rascript</string>
+			<key>match</key>
+			<string>\b(?!\d)\w+(?=[\t ]*=(?!=))</string>
 		</dict>
 		<key>variable-other</key>
 		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>comment</key>
-					<string>different variables around the file being used, not assignment</string>
-					<key>match</key>
-					<string>([a-zA-Z_][\w]*)</string>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>variable.other.rascript</string>
-						</dict>
-					</dict>
-				</dict>
-			</array>
+			<key>comment</key>
+			<string>different variables around the file being used, not assignment</string>
+			<key>name</key>
+			<string>variable.other.rascript</string>
+			<key>match</key>
+			<string>\b(?!\d)\w+</string>
 		</dict>
 	</dict>
 	<key>scopeName</key>
